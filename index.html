@@ -3013,6 +3013,50 @@
       box-sizing: border-box;
     }
 
+
+    /* Mobile Responsive Sub-tab Actions Grid on HP/APK (Anti-Bertumpuk, 100% Rapi & Simetris) */
+    @media (max-width: 640px) {
+      .sub-tab-actions-row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        width: 100% !important;
+      }
+
+      /* Baris 1: Checkbox Full Width sebagai baris seleksi yang rapi */
+      .sub-tab-actions-row > .harmonized-checkbox-label {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding: 0 12px !important;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-thin) !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+        margin-bottom: 2px !important;
+      }
+
+      /* Baris 2 & 3: Tombol Aksi Simetris 2 Kolom (50% - 50%) */
+      .sub-tab-actions-row > .harmonized-btn {
+        flex: 1 1 calc(50% - 4px) !important;
+        min-width: calc(50% - 4px) !important;
+        max-width: 100% !important;
+        height: 36px !important;
+        font-size: 0.725rem !important;
+        padding: 0 8px !important;
+        justify-content: center !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+      }
+
+      .sub-tab-actions-row > .harmonized-badge {
+        margin: 2px 0 !important;
+      }
+    }
+
 </style>
 </head>
 
@@ -3386,11 +3430,12 @@
               </button>
             </div>
             <div class="sub-tab-actions-row">
+              <label class="harmonized-checkbox-label" title="Pilih Semua Transaksi Lynk.id">
+                <input type="checkbox" id="selectAllUnfilledCardChk" onchange="toggleSelectAllUnfilled(this)">
+                <span>Pilih Semua Transaksi</span>
+              </label>
               <button class="harmonized-btn btn-variant-blue" id="btnCompareLynkWithForm" onclick="openCompareLynkWithFormModal()" title="Bandingkan data pembelian Lynk.id dengan pengisi Form">
                 <i data-lucide="git-compare"></i> <span>Bandingkan</span>
-              </button>
-              <button class="harmonized-btn btn-variant-gold" onclick="toggleMobileSelectAllUnfilled()" title="Pilih Semua Transaksi">
-                <i data-lucide="check-square"></i> <span>Pilih Semua</span>
               </button>
               <button class="harmonized-btn btn-variant-primary" onclick="executeBulkRemarkUnfilled()" title="Beri remark massal transaksi terpilih">
                 <i data-lucide="check"></i> <span>Remark Massal</span>
@@ -3450,22 +3495,23 @@
                 <i data-lucide="search"></i>
                 <input type="text" id="whitelistSearchInput" class="sub-tab-search-input" placeholder="Cari Nama atau Email Whitelist..." oninput="filterWhitelistSection(this.value)">
               </div>
-              <button class="harmonized-btn btn-variant-blue" onclick="checkUnconfirmedAgainstSupabase()" title="Periksa status pendaftar langsung di tabel Supabase">
-                <i data-lucide="refresh-cw"></i> <span>Cek Live</span>
+              <button class="harmonized-btn btn-variant-blue" id="btnCheckLiveWhitelist" onclick="checkUnconfirmedAgainstSupabase(null, true)" title="Periksa status pendaftar langsung di tabel Supabase">
+                <i data-lucide="refresh-cw" id="iconCheckLiveWhitelist"></i> <span id="textCheckLiveWhitelist">Cek Live</span>
               </button>
             </div>
             <div class="sub-tab-actions-row">
+              <label class="harmonized-checkbox-label" title="Pilih Semua Antrean Whitelist">
+                <input type="checkbox" id="selectAllWhitelistCardChk" onchange="toggleSelectAllWhitelist(this)">
+                <span>Pilih Semua Antrean</span>
+              </label>
               <button class="harmonized-btn btn-variant-primary" onclick="executeBulkSendToSupabase()" title="Kirim email terpilih ke Supabase Whitelist LMS">
                 <i data-lucide="send"></i> <span>Kirim Supabase</span>
               </button>
-              <button class="harmonized-btn btn-variant-gold" id="btnSelectAllWhitelist" onclick="toggleSelectAllWhitelistBtn()" title="Pilih semua antrean Whitelist">
-                <i data-lucide="check-square"></i> <span>Pilih Semua</span>
+              <button class="harmonized-btn btn-variant-blue" onclick="executeBulkConfirmWhitelist()" title="Tandai data terpilih selesai &amp; hilangkan dari antrean">
+                <i data-lucide="check-check"></i> <span>Konfirmasi Selesai</span>
               </button>
               <button class="harmonized-btn btn-variant-amber" onclick="copySelectedWhitelistEmails()" title="Salin email terpilih ke clipboard">
                 <i data-lucide="copy"></i> <span>Salin Email</span>
-              </button>
-              <button class="harmonized-btn btn-variant-blue" onclick="executeBulkConfirmWhitelist()" title="Tandai data terpilih selesai &amp; hilangkan dari antrean">
-                <i data-lucide="check-check"></i> <span>Konfirmasi Selesai</span>
               </button>
               <button class="harmonized-btn btn-variant-neutral" onclick="openRestoreWhitelistModal()" title="Kembalikan data yang sudah dikonfirmasi ke antrean Whitelist">
                 <i data-lucide="history"></i> <span>Pulihkan Data</span>
@@ -3656,6 +3702,9 @@
               </button>
               <button class="action-btn btn-custom" style="flex: 1 1 140px; justify-content: center; color: #10b981; border-color: rgba(16, 185, 129, 0.4);" onclick="testSupabaseConnection()">
                 <i data-lucide="plug"></i> Tes Koneksi
+              </button>
+              <button class="action-btn btn-wa" style="flex: 1 1 200px; justify-content: center; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4);" onclick="reconstructAndImportSheetToSupabase()" title="Rekonstruksi &amp; Impor seluruh data pendaftar dari Google Sheets langsung ke Supabase">
+                <i data-lucide="upload-cloud"></i> Rekonstruksi &amp; Impor Data Sheet ke Supabase
               </button>
             </div>
           </div>
@@ -4708,6 +4757,102 @@
         badge.style.border = '1px solid rgba(239, 68, 68, 0.3)';
         badge.innerHTML = '⚠️ Data Lokal';
       }
+    }
+
+    
+    // ====================================================
+    // REKONSTRUKSI & IMPOR DATA SHEET KE SUPABASE WHITELIST
+    // ====================================================
+    async function reconstructAndImportSheetToSupabase() {
+      const cfg = getSupabaseConfig();
+      if (!cfg.url || !cfg.key) {
+        showToast('Konfigurasi Supabase Whitelist belum lengkap di menu Pengaturan.');
+        return;
+      }
+
+      const allCandidates = [...(activeMembers || []), ...(archivedMembers || [])];
+      if (allCandidates.length === 0) {
+        showToast('Data member dari Spreadsheet belum termuat. Silakan klik Muat Ulang terlebih dahulu.');
+        return;
+      }
+
+      openConfirmModal(
+        'Rekonstruksi & Impor <strong>' + allCandidates.length + '</strong> data pendaftar dari Google Sheets langsung ke tabel Supabase (<code>' + cfg.table + '</code>)?<br><br><small style="color:var(--text-muted); font-size:0.75rem; line-height:1.4;">Seluruh data akan dibersihkan terlebih dahulu: nama dirapikan, email divalidasi lowercase, nomor WhatsApp distandarisasi ke format internasional (62...), dan kolom-kolom yang tidak diperlukan dibuang.</small>',
+        async function() {
+          showToast('Memulai rekonstruksi data pendaftar...');
+          
+          const emailMap = new Map();
+          allCandidates.forEach(m => {
+            const cleanEmail = (m.email || '').toLowerCase().trim();
+            if (!cleanEmail || !cleanEmail.includes('@')) return;
+            
+            let cleanName = (m.nama || '').trim();
+            if (!cleanName || cleanName === '-') cleanName = cleanEmail.split('@')[0];
+            
+            let cleanPhone = (m.waCleaned || m.waRaw || '').replace(/[^0-9]/g, '');
+            if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.slice(1);
+            
+            let createdAt = m.timestamp ? new Date(m.timestamp).toISOString() : new Date().toISOString();
+            if (createdAt === 'Invalid Date' || !createdAt) createdAt = new Date().toISOString();
+
+            if (!emailMap.has(cleanEmail)) {
+              emailMap.set(cleanEmail, {
+                [cfg.colEmail]: cleanEmail,
+                [cfg.colName]: cleanName,
+                phone: cleanPhone,
+                created_at: createdAt
+              });
+            }
+          });
+
+          const payload = Array.from(emailMap.values());
+          if (payload.length === 0) {
+            showToast('Tidak ada data valid yang bisa direkonstruksi.');
+            return;
+          }
+
+          showToast('Mengimpor ' + payload.length + ' data bersih ke Supabase...');
+
+          try {
+            const cleanUrl = cfg.url.replace(/\/+$/, '');
+            const endpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(cfg.table);
+
+            const batchSize = 50;
+            let successCount = 0;
+
+            for (let i = 0; i < payload.length; i += batchSize) {
+              const batch = payload.slice(i, i + batchSize);
+              const resp = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                  'apikey': cfg.key,
+                  'Authorization': 'Bearer ' + cfg.key,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'resolution=merge-duplicates'
+                },
+                body: JSON.stringify(batch)
+              });
+
+              if (resp.ok) {
+                successCount += batch.length;
+              } else {
+                const errText = await resp.text();
+                console.warn('Batch import notice:', errText);
+              }
+            }
+
+            showToast('Sukses merekonstruksi & mengimpor ' + successCount + ' data ke Supabase!');
+            addAuditLog('🚀 Impor Rekonstruksi Supabase: ' + successCount + ' data');
+            
+            // Segarkan pengecekan live di antrean Whitelist
+            checkUnconfirmedAgainstSupabase(null, true);
+          } catch (err) {
+            console.error('Import Supabase Error:', err);
+            showToast('Terjadi kesalahan saat impor: ' + err.message);
+          }
+        },
+        'Mulai Impor'
+      );
     }
 
     function initApp() {
@@ -7254,15 +7399,43 @@
       matching.forEach(c => {
         c.checked = src.checked;
       });
+      updateSelectedUnfilledBadge();
     }
 
     function toggleSelectAllUnfilled(chk) {
+      const isChecked = chk.checked;
       const checkboxes = document.querySelectorAll('.unfilled-chk');
       checkboxes.forEach(c => {
         if (!c.disabled) {
-          c.checked = chk.checked;
+          c.checked = isChecked;
         }
       });
+      const tableChk = document.getElementById('selectAllUnfilledChk');
+      const cardChk = document.getElementById('selectAllUnfilledCardChk');
+      if (tableChk && tableChk !== chk) tableChk.checked = isChecked;
+      if (cardChk && cardChk !== chk) cardChk.checked = isChecked;
+
+      updateSelectedUnfilledBadge();
+    }
+
+    function updateSelectedUnfilledBadge() {
+      const selectedChks = document.querySelectorAll('.unfilled-chk:checked');
+      const uniqueRows = new Set(Array.from(selectedChks).map(c => c.getAttribute('data-row')).filter(Boolean));
+      const badge = document.getElementById('selectedUnfilledCountBadge');
+      if (badge) {
+        if (uniqueRows.size > 0) {
+          badge.style.display = 'inline-flex';
+          badge.innerText = uniqueRows.size + ' dipilih';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+      const totalAvailable = document.querySelectorAll('#unfilledCardsContainer .unfilled-chk:not(:disabled)').length || document.querySelectorAll('.unfilled-table-wrapper .unfilled-chk:not(:disabled)').length;
+      const cardChk = document.getElementById('selectAllUnfilledCardChk');
+      const tableChk = document.getElementById('selectAllUnfilledChk');
+      const isAll = (totalAvailable > 0 && uniqueRows.size === totalAvailable);
+      if (cardChk) cardChk.checked = isAll;
+      if (tableChk) tableChk.checked = isAll;
     }
 
     let mobileSelectAllState = false;
@@ -7660,16 +7833,46 @@
      * untuk mendeteksi apakah data sudah pernah diinput sebelumnya ke Supabase.
      */
     isCheckingSupabaseLive = false;
-    async function checkUnconfirmedAgainstSupabase(unconfirmedList) {
-      if (isCheckingSupabaseLive || !Array.isArray(unconfirmedList) || unconfirmedList.length === 0) return;
+    async function checkUnconfirmedAgainstSupabase(unconfirmedList = null, isManualClick = false) {
+      if (isCheckingSupabaseLive) {
+        if (isManualClick) showToast('Pemeriksaan status Supabase sedang berlangsung...');
+        return;
+      }
+
+      if (!unconfirmedList || !Array.isArray(unconfirmedList)) {
+        unconfirmedList = getUnconfirmedWhitelistMembers();
+      }
+
+      if (!unconfirmedList || unconfirmedList.length === 0) {
+        if (isManualClick) showToast('Antrean Whitelist kosong, tidak ada email untuk diperiksa.');
+        return;
+      }
+
       const cfg = getSupabaseConfig();
-      if (!cfg.url || !cfg.key) return;
+      if (!cfg.url || !cfg.key) {
+        if (isManualClick) showToast('Konfigurasi Supabase Whitelist belum diisi di menu Pengaturan.');
+        return;
+      }
 
       const emailsToCheck = unconfirmedList
         .map(m => (m.email || '').toLowerCase().trim())
         .filter(e => e && (!supabaseSentMembersMap[e] || !supabaseSentMembersMap[e].id));
 
-      if (emailsToCheck.length === 0) return;
+      if (emailsToCheck.length === 0) {
+        if (isManualClick) showToast('Seluruh email di antrean ini sudah berstatus Whitelisted!');
+        return;
+      }
+
+      const btn = document.getElementById('btnCheckLiveWhitelist');
+      const icon = document.getElementById('iconCheckLiveWhitelist') || (btn ? btn.querySelector('i, svg') : null);
+      const text = document.getElementById('textCheckLiveWhitelist');
+      if (btn) btn.disabled = true;
+      if (icon) icon.classList.add('spin-icon');
+      if (text) text.innerText = 'Mengecek...';
+
+      if (isManualClick) {
+        showToast('Memeriksa status ' + emailsToCheck.length + ' email langsung ke Supabase...');
+      }
 
       isCheckingSupabaseLive = true;
       try {
@@ -7713,12 +7916,30 @@
                 renderWhitelistSection(true);
               }
             }
+            if (isManualClick) {
+              showToast('Pemeriksaan Selesai: ' + foundRows.length + ' email ditemukan sudah ter-whitelist di Supabase!');
+            }
+          } else {
+            if (isManualClick) {
+              showToast('Pemeriksaan Selesai: Belum ada antrean yang terdaftar di Supabase.');
+            }
+          }
+        } else {
+          if (isManualClick) {
+            showToast('Gagal memeriksa Supabase: HTTP ' + resp.status + ' (' + resp.statusText + ')');
           }
         }
       } catch (err) {
         console.warn('Gagal live check Supabase status:', err);
+        if (isManualClick) {
+          showToast('Koneksi ke Supabase gagal: ' + err.message);
+        }
       } finally {
         isCheckingSupabaseLive = false;
+        if (btn) btn.disabled = false;
+        if (icon) icon.classList.remove('spin-icon');
+        if (text) text.innerText = 'Cek Live';
+        renderIcons();
       }
     }
 
@@ -7879,9 +8100,9 @@
       if (countBadge) {
         countBadge.innerText = selectedWhitelistRows.size + ' dipilih';
       }
-      if (selectAllChk) {
-        selectAllChk.checked = (unconfirmedList.length > 0 && selectedWhitelistRows.size === unconfirmedList.length);
-      }
+      if (selectAllChk) selectAllChk.checked = (unconfirmedList.length > 0 && selectedWhitelistRows.size === unconfirmedList.length);
+      const cardWlChk = document.getElementById('selectAllWhitelistCardChk');
+      if (cardWlChk) cardWlChk.checked = (unconfirmedList.length > 0 && selectedWhitelistRows.size === unconfirmedList.length);
 
       if (unconfirmedList.length === 0) {
         const emptyHtml = '<tr><td colspan="6" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">' +
