@@ -7,6 +7,11 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Zettbos Private Mentoring - Admin Dashboard</title>
 
+  <!-- App Icon / Favicon (Identik dengan Logo APK Android) -->
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <link rel="icon" type="image/png" href="data:image/png;base64,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">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
   <script>
     // Bersihkan cache HTML OTA lawas di browser agar tidak terjadi konflik eksekusi script
     try {
@@ -2328,20 +2333,98 @@
       border-bottom: none;
     }
 
+    
+    /* Bottom Navigation Bar: Otomatis Disembunyikan 100% Selama Layar Loading Aktif */
+    body.app-loading .bottom-nav,
+    body:not(.loaded) .bottom-nav,
+    #browserLoadingScreen:not(.fade-out) ~ .bottom-nav {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* Pop-up Detail Modal Member & Transaksi (Ultra-Reliable & Mobile Responsive) */
+    #memberDetailBackdrop {
+      z-index: 100150 !important;
+    }
+
+    #memberDetailModal {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 92% !important;
+      max-width: 500px !important;
+      max-height: 86vh !important;
+      height: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 0 !important;
+      background: var(--bg-toast) !important;
+      border: 1px solid var(--border-thin) !important;
+      border-top: 3px solid var(--accent-red) !important;
+      border-radius: 16px !important;
+      z-index: 100155 !important;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85) !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+    }
+
+    #memberDetailModal.show {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      visibility: visible !important;
+    }
+
+    #memberDetailModal .modal-header {
+      padding: 14px 16px !important;
+      border-bottom: 1px solid var(--border-thin) !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      flex-shrink: 0 !important;
+      background: transparent !important;
+    }
+
+    #dtlModalBody {
+      flex: 1 1 auto !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding: 14px 16px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      max-height: calc(86vh - 125px) !important;
+      min-height: 120px !important;
+    }
+
+    #dtlModalFooter {
+      padding: 12px 16px !important;
+      border-top: 1px solid var(--border-thin) !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      flex-shrink: 0 !important;
+      margin-top: 0 !important;
+      background: rgba(0, 0, 0, 0.15) !important;
+    }
+
     /* Browser Loading Screen Overlay */
     .browser-loading {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, #242424 0%, #0c0c0e 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 99999;
-      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s ease;
-      overflow: hidden;
+      position: fixed !important;
+      inset: 0 !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: radial-gradient(circle at center, #242424 0%, #0c0c0e 100%) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 99999999 !important;
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s ease !important;
+      overflow: hidden !important;
     }
 
     .loading-progress-wrapper {
@@ -2360,10 +2443,14 @@
     }
 
     .loading-progress-fill {
+      width: 100%;
       height: 100%;
       background: #e62232;
       border-radius: 9999px;
-      transition: width 0.35s ease;
+      transform-origin: left center;
+      transform: scaleX(0.12);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
     }
 
     .browser-loading.fade-out {
@@ -2717,7 +2804,7 @@
 </style>
 </head>
 
-<body>
+<body class="app-loading">
   <!-- Initial Fullscreen Loading Overlay -->
   <div id="browserLoadingScreen" class="browser-loading">
     <div class="loading-content">
@@ -3398,8 +3485,8 @@
 
   <!-- Pop-up Detail Modal Member & Transaksi (Ultra-Compact System) -->
   <div class="modal-backdrop" id="memberDetailBackdrop" onclick="closeMemberDetailModal()"></div>
-  <div class="preview-modal" id="memberDetailModal" style="max-width: 520px; width: 94%; max-height: 90vh; overflow-y: auto;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border-thin); padding-bottom: 10px;">
+  <div class="preview-modal" id="memberDetailModal">
+    <div class="modal-header">
       <div>
         <h3 style="margin: 0; font-size: 1.05rem; color: var(--text-main); font-weight: 700; display: flex; align-items: center; gap: 6px;" id="dtlModalTitle">
           Detail Member
@@ -3408,16 +3495,16 @@
           Informasi lengkap &amp; opsi aksi
         </div>
       </div>
-      <button type="button" class="mini-btn-crud" onclick="closeMemberDetailModal()" title="Tutup" style="padding: 4px 8px; font-size: 0.8rem;">
+      <button type="button" class="mini-btn-crud" onclick="closeMemberDetailModal()" title="Tutup" style="padding: 4px 8px; font-size: 0.8rem; cursor: pointer;">
         <i data-lucide="x" style="width: 16px; height: 16px;"></i>
       </button>
     </div>
-    <div id="dtlModalBody" style="display: flex; flex-direction: column; gap: 10px;">
+    <div id="dtlModalBody">
       <!-- Populated dynamically via JS -->
     </div>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; border-top: 1px solid var(--border-thin); padding-top: 12px;" id="dtlModalFooter">
+    <div id="dtlModalFooter">
       <div id="dtlModalFooterLeft" style="display: flex; gap: 6px;"></div>
-      <button type="button" class="action-btn" style="width: auto; padding: 6px 16px; background: rgba(255,255,255,0.08); color: var(--text-main);" onclick="closeMemberDetailModal()">Tutup</button>
+      <button type="button" class="action-btn" style="width: auto; padding: 6px 16px; background: rgba(255,255,255,0.08); color: var(--text-main); cursor: pointer;" onclick="closeMemberDetailModal()">Tutup</button>
     </div>
   </div>
 
@@ -3778,6 +3865,10 @@
   <div class="toast" id="toastMessage">Sistem dimuat.</div>
 
   <script>
+    // Global State & Selection Sets (Dideklarasikan di awal agar kebal dari Temporal Dead Zone)
+    var selectedActiveEmails = (typeof selectedActiveEmails !== 'undefined') ? selectedActiveEmails : new Set();
+    var selectedArchivedEmails = (typeof selectedArchivedEmails !== 'undefined') ? selectedArchivedEmails : new Set();
+    var isCheckingSupabaseLive = false;
     // Universal Safe Icon Renderer (Anti-crash, Anti-lag, Targeted DOM)
     function renderIcons(rootContainer = null) {
       if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
@@ -4121,51 +4212,58 @@
     function updateBrowserProgress(percent, durationSec = 0.5, easing = 'cubic-bezier(0.16, 1, 0.3, 1)') {
       const bar = document.getElementById('loadingProgressBar');
       if (bar) {
+        const scaleVal = Math.min(1, Math.max(0, percent / 100));
         if (durationSec === 0) {
           bar.style.transition = 'none';
         } else {
-          bar.style.transition = 'width ' + durationSec + 's ' + easing;
+          bar.style.transition = 'transform ' + durationSec + 's ' + easing;
         }
-        bar.style.width = Math.min(100, Math.max(0, percent)) + '%';
+        bar.style.transform = 'scaleX(' + scaleVal + ')';
       }
     }
 
-    // Ultra-smooth loading screen without choppy interval timer resets
+    // 100% Flawless, GPU Compositor-Accelerated Loading Screen (Zero Jitter, Zero Stutter)
     function showBrowserLoader(arg1, arg2) {
       let initPct = 15;
       if (typeof arg1 === 'number') initPct = arg1;
       else if (typeof arg2 === 'number') initPct = arg2;
 
-      clearLoaderTimers();
-      isLoaderHiding = false;
-      loaderStartTime = Date.now();
-
       const browserLoader = document.getElementById('browserLoadingScreen');
-      if (browserLoader) {
+      if (!browserLoader) return;
+
+      document.body.classList.add('app-loading');
+      document.body.classList.remove('loaded');
+
+      const isAlreadyVisible = (browserLoader.style.display === 'flex' && !browserLoader.classList.contains('fade-out'));
+
+      isLoaderHiding = false;
+      if (!isAlreadyVisible) {
+        loaderStartTime = Date.now();
+        clearLoaderTimers();
         browserLoader.style.display = 'flex';
         browserLoader.style.pointerEvents = 'auto';
         browserLoader.classList.remove('fade-out');
 
-        // 1. Reset instan ke 0% tanpa animasi
-        updateBrowserProgress(0, 0);
-
-        // 2. Luncurkan progress bar mulus ke 72% via hardware-accelerated CSS
+        // Melesat mulus dengan GPU scaleX dari 0 ke 75%
+        updateBrowserProgress(12, 0);
         requestAnimationFrame(() => {
           setTimeout(() => {
-            updateBrowserProgress(72, 1.4, 'cubic-bezier(0.12, 0.8, 0.2, 1)');
-          }, 40);
+            updateBrowserProgress(75, 1.2, 'cubic-bezier(0.16, 1, 0.3, 1)');
+          }, 30);
         });
 
-        // 3. Jika loading masih berlangsung, merayap tenang ke 92%
         loaderTimeoutList.push(setTimeout(() => {
           if (!isLoaderHiding && loaderStartTime > 0) {
-            updateBrowserProgress(92, 2.8, 'cubic-bezier(0.1, 0.6, 0.1, 1)');
+            updateBrowserProgress(92, 2.5, 'cubic-bezier(0.1, 0.6, 0.1, 1)');
           }
-        }, 1450));
+        }, 1300));
+      } else {
+        // Jika sudah aktif, dorong mulus ke depan tanpa pernah reset ke 0%
+        updateBrowserProgress(85, 0.8, 'cubic-bezier(0.16, 1, 0.3, 1)');
       }
     }
 
-    function hideBrowserLoader(minDisplayDelay = 1800) {
+    function hideBrowserLoader(minDisplayDelay = 1200) {
       if (isLoaderHiding) return;
       isLoaderHiding = true;
 
@@ -4174,8 +4272,8 @@
 
       setTimeout(() => {
         clearLoaderTimers();
-        // Meluncur mulus ke 100% penuh
-        updateBrowserProgress(100, 0.35, 'cubic-bezier(0.2, 0.9, 0.3, 1)');
+        // Zoom instan & mulus ke 100%
+        updateBrowserProgress(100, 0.3, 'cubic-bezier(0.2, 0.9, 0.3, 1)');
 
         setTimeout(() => {
           const browserLoader = document.getElementById('browserLoadingScreen');
@@ -4186,7 +4284,10 @@
               browserLoader.style.display = 'none';
               loaderStartTime = 0;
               isLoaderHiding = false;
-            }, 500);
+              // Tampilkan bottom navbar secara mulus setelah loading selesai
+              document.body.classList.remove('app-loading');
+              document.body.classList.add('loaded');
+            }, 450);
           }
           if (window.Android && typeof window.Android.pageLoaded === 'function') {
             window.Android.pageLoaded();
@@ -4194,7 +4295,7 @@
           try {
             window.parent.postMessage('zettbos-page-loaded', '*');
           } catch (e) { }
-        }, 400); // Tahan sejenak di 100% agar user puas melihat bar penuh
+        }, 320);
       }, remainingTime);
     }
 
@@ -6912,7 +7013,7 @@
 
       document.getElementById('dtlModalFooterLeft').innerHTML = actionBtnHtml;
 
-      modal.style.display = 'block';
+      modal.style.display = 'flex';
       modal.classList.add('show');
       backdrop.style.display = 'block';
       backdrop.classList.add('show');
@@ -7332,7 +7433,7 @@
      * Memeriksa daftar email unconfirmed langsung ke Supabase secara background
      * untuk mendeteksi apakah data sudah pernah diinput sebelumnya ke Supabase.
      */
-    let isCheckingSupabaseLive = false;
+    isCheckingSupabaseLive = false;
     async function checkUnconfirmedAgainstSupabase(unconfirmedList) {
       if (isCheckingSupabaseLive || !Array.isArray(unconfirmedList) || unconfirmedList.length === 0) return;
       const cfg = getSupabaseConfig();
@@ -7644,7 +7745,7 @@
 
       document.getElementById('dtlModalFooterLeft').innerHTML = actionBtnHtml;
 
-      modal.style.display = 'block';
+      modal.style.display = 'flex';
       modal.classList.add('show');
       backdrop.style.display = 'block';
       backdrop.classList.add('show');
@@ -8346,7 +8447,7 @@
     }
 
     // State Seleksi Member Aktif untuk Kirim Massal & Aksi
-    let selectedActiveEmails = new Set();
+    selectedActiveEmails = selectedActiveEmails || new Set();
 
     function toggleSelectAllActive(chk) {
       const isChecked = chk.checked;
@@ -9215,7 +9316,7 @@
         };
       }
 
-      modal.style.display = 'block';
+      modal.style.display = 'flex';
       modal.classList.add('show');
       backdrop.style.display = 'block';
       backdrop.classList.add('show');
