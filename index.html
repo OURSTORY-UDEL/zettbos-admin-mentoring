@@ -1604,11 +1604,14 @@
 
       .member-cards-wrapper,
       .unfilled-cards-wrapper,
-      .gemini-cards-wrapper {
+      .gemini-cards-wrapper,
+      #unfilledCardsContainer,
+      #whitelistCardsContainer {
         display: flex !important;
         flex-direction: column !important;
         gap: 10px !important;
         width: 100% !important;
+        padding-bottom: calc(140px + env(safe-area-inset-bottom, 20px)) !important;
       }
 
       .member-card {
@@ -2664,48 +2667,51 @@
 .compact-card-row2 {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  font-size: 0.73rem;
+  gap: 4px;
+  font-size: 0.75rem;
   color: var(--text-muted);
   padding-left: 26px; /* indent to align under name after checkbox */
-  line-height: 1.35;
+  line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
 }
 .compact-meta-line1 {
   display: flex;
   align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-wrap: wrap;
+  gap: 5px;
+  word-break: break-all;
 }
 .compact-meta-line2 {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.71rem;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 0.72rem;
+  word-break: break-all;
 }
 .compact-meta-sep {
   opacity: 0.4;
   font-size: 0.65rem;
 }
 .compact-meta-email {
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  color: #93c5fd;
+  font-family: monospace;
+  font-size: 0.76rem;
+  word-break: break-all;
 }
 .compact-meta-phone {
   font-family: monospace;
   color: var(--text-main);
-  font-weight: 500;
-  white-space: nowrap;
-  flex-shrink: 0;
+  font-weight: 600;
 }
 .compact-meta-time {
-  white-space: nowrap;
-  flex-shrink: 0;
   color: var(--text-muted);
+}
+.compact-meta-badge {
+  color: var(--accent-gold);
+  font-weight: 600;
+  font-size: 0.72rem;
 }
 
 </style>
@@ -4102,77 +4108,64 @@
     let isBulkRunning = false;
     let bulkCancel = false;
 
-    // Helper progress bar animation (Sleek, Minimalist & Zen)
-    let loadingBarInterval = null;
+    // Helper progress bar animation (Flawless, Ultra-Smooth GPU 60/120fps)
     let loaderStartTime = 0;
-    let currentProgressVal = 0;
     let isLoaderHiding = false;
     let loaderTimeoutList = [];
 
     function clearLoaderTimers() {
-      if (loadingBarInterval) {
-        clearInterval(loadingBarInterval);
-        loadingBarInterval = null;
-      }
       loaderTimeoutList.forEach(t => clearTimeout(t));
       loaderTimeoutList = [];
     }
 
-    function updateBrowserProgress(percent) {
-      currentProgressVal = percent;
+    function updateBrowserProgress(percent, durationSec = 0.5, easing = 'cubic-bezier(0.16, 1, 0.3, 1)') {
       const bar = document.getElementById('loadingProgressBar');
-      const bounded = Math.min(100, Math.max(0, Math.round(percent)));
-      if (bar) bar.style.width = bounded + '%';
-    }
-
-    function simulateProgress(startPct, endPct, durationMs) {
-      if (loadingBarInterval) clearInterval(loadingBarInterval);
-      let current = startPct;
-      updateBrowserProgress(current);
-      const stepTime = 30;
-      const totalSteps = Math.max(1, durationMs / stepTime);
-      const increment = (endPct - startPct) / totalSteps;
-      loadingBarInterval = setInterval(() => {
-        current += increment;
-        if (current >= endPct) {
-          current = endPct;
-          clearInterval(loadingBarInterval);
-          loadingBarInterval = null;
+      if (bar) {
+        if (durationSec === 0) {
+          bar.style.transition = 'none';
+        } else {
+          bar.style.transition = 'width ' + durationSec + 's ' + easing;
         }
-        updateBrowserProgress(current);
-      }, stepTime);
+        bar.style.width = Math.min(100, Math.max(0, percent)) + '%';
+      }
     }
 
-    // Helper to show designed Hinomaru loader with progressive stages
-    function showBrowserLoader(initialPercent = 12) {
+    // Ultra-smooth loading screen without choppy interval timer resets
+    function showBrowserLoader(arg1, arg2) {
+      let initPct = 15;
+      if (typeof arg1 === 'number') initPct = arg1;
+      else if (typeof arg2 === 'number') initPct = arg2;
+
       clearLoaderTimers();
       isLoaderHiding = false;
       loaderStartTime = Date.now();
+
       const browserLoader = document.getElementById('browserLoadingScreen');
       if (browserLoader) {
         browserLoader.style.display = 'flex';
         browserLoader.style.pointerEvents = 'auto';
         browserLoader.classList.remove('fade-out');
-        updateBrowserProgress(initialPercent);
 
-        // Tahapan progres bertahap yang tenang & memuaskan dinikmati (tanpa teks dinamis)
-        simulateProgress(initialPercent, 40, 700);
+        // 1. Reset instan ke 0% tanpa animasi
+        updateBrowserProgress(0, 0);
 
+        // 2. Luncurkan progress bar mulus ke 72% via hardware-accelerated CSS
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            updateBrowserProgress(72, 1.4, 'cubic-bezier(0.12, 0.8, 0.2, 1)');
+          }, 40);
+        });
+
+        // 3. Jika loading masih berlangsung, merayap tenang ke 92%
         loaderTimeoutList.push(setTimeout(() => {
-          if (!isLoaderHiding && loaderStartTime) {
-            simulateProgress(40, 70, 850);
+          if (!isLoaderHiding && loaderStartTime > 0) {
+            updateBrowserProgress(92, 2.8, 'cubic-bezier(0.1, 0.6, 0.1, 1)');
           }
-        }, 750));
-
-        loaderTimeoutList.push(setTimeout(() => {
-          if (!isLoaderHiding && loaderStartTime) {
-            simulateProgress(70, 92, 900);
-          }
-        }, 1650));
+        }, 1450));
       }
     }
 
-    function hideBrowserLoader(minDisplayDelay = 2200) {
+    function hideBrowserLoader(minDisplayDelay = 1800) {
       if (isLoaderHiding) return;
       isLoaderHiding = true;
 
@@ -4181,33 +4174,30 @@
 
       setTimeout(() => {
         clearLoaderTimers();
-        // Selesaikan bar ke 100% dengan mulus
-        simulateProgress(currentProgressVal, 100, 350);
+        // Meluncur mulus ke 100% penuh
+        updateBrowserProgress(100, 0.35, 'cubic-bezier(0.2, 0.9, 0.3, 1)');
+
         setTimeout(() => {
-          updateBrowserProgress(100);
-          setTimeout(() => {
-            const browserLoader = document.getElementById('browserLoadingScreen');
-            if (browserLoader) {
-              browserLoader.classList.add('fade-out');
-              browserLoader.style.pointerEvents = 'none';
-              setTimeout(() => {
-                browserLoader.style.display = 'none';
-                loaderStartTime = 0;
-                isLoaderHiding = false;
-              }, 600);
-            }
-            if (window.Android && typeof window.Android.pageLoaded === 'function') {
-              window.Android.pageLoaded();
-            }
-            try {
-              window.parent.postMessage('zettbos-page-loaded', '*');
-            } catch (e) { }
-          }, 450); // Tahan sejenak di 100% agar user puas melihat progress bar penuh
-        }, 360);
+          const browserLoader = document.getElementById('browserLoadingScreen');
+          if (browserLoader) {
+            browserLoader.classList.add('fade-out');
+            browserLoader.style.pointerEvents = 'none';
+            setTimeout(() => {
+              browserLoader.style.display = 'none';
+              loaderStartTime = 0;
+              isLoaderHiding = false;
+            }, 500);
+          }
+          if (window.Android && typeof window.Android.pageLoaded === 'function') {
+            window.Android.pageLoaded();
+          }
+          try {
+            window.parent.postMessage('zettbos-page-loaded', '*');
+          } catch (e) { }
+        }, 400); // Tahan sejenak di 100% agar user puas melihat bar penuh
       }, remainingTime);
     }
 
-    // Fungsi narik sinkronisasi data dengan loading screen elegan
     function syncDataWithLoader() {
       showBrowserLoader(15);
       fetchData(false);
@@ -6837,14 +6827,13 @@
             
             '<div class="compact-card-row2">' +
               '<div class="compact-meta-line1">' +
-                '<i data-lucide="mail" style="width:11px;height:11px;opacity:0.6;flex-shrink:0;"></i>' +
-                '<span class="compact-meta-email" title="' + escapeAttr(item.email || '') + '">' + escapeHtml(item.email || '-') + '</span>' +
-                '<span class="compact-meta-sep">•</span>' +
-                '<span style="color:var(--accent-gold); font-weight:600; font-size:0.71rem;">' + escapeHtml(memberInfo) + '</span>' +
+                '<i data-lucide="mail" style="width:12px;height:12px;color:#60a5fa;flex-shrink:0;"></i>' +
+                '<span class="compact-meta-email">' + escapeHtml(item.email || '-') + '</span>' +
               '</div>' +
               '<div class="compact-meta-line2">' +
-                '<i data-lucide="phone" style="width:11px;height:11px;opacity:0.6;flex-shrink:0;"></i>' +
+                '<i data-lucide="phone" style="width:12px;height:12px;opacity:0.7;flex-shrink:0;"></i>' +
                 '<span class="compact-meta-phone">' + escapeHtml(waDisplay) + '</span>' +
+                (memberInfo ? ('<span class="compact-meta-sep">•</span><span class="compact-meta-badge">' + escapeHtml(memberInfo) + '</span>') : '') +
                 '<span class="compact-meta-sep">•</span>' +
                 '<span class="compact-meta-time">' + escapeHtml(item.timestamp || '-') + '</span>' +
               '</div>' +
@@ -7161,7 +7150,7 @@
       if (nameInput) nameInput.value = cfg.colName || 'full_name';
     }
 
-    async // ====================================================
+    // ====================================================
     // KONFIGURASI DATABASE 3 (SUPABASE CORE MENTORING BARU)
     // ====================================================
     function getMentoringDbConfig() {
