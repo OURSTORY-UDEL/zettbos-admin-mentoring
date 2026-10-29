@@ -3310,7 +3310,7 @@
           <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 14px; margin-top: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <span style="font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-                <i data-lucide="database" style="width: 14px; height: 14px; color: #10b981;"></i> Konfigurasi Supabase Whitelist LMS
+                <i data-lucide="database" style="width: 14px; height: 14px; color: #10b981;"></i> Konfigurasi Database 2 (Supabase Whitelist LMS)
               </span>
               <span style="font-size: 0.725rem; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">REST API Whitelist</span>
             </div>
@@ -3349,6 +3349,43 @@
               </button>
               <button class="action-btn btn-custom" style="flex: 1 1 140px; justify-content: center; color: #10b981; border-color: rgba(16, 185, 129, 0.4);" onclick="testSupabaseConnection()">
                 <i data-lucide="plug"></i> Tes Koneksi
+              </button>
+            </div>
+          </div>
+
+          <!-- Database 3: Supabase Core Private Mentoring (Akun Baru / Terpisah) -->
+          <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 14px; margin-top: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="zap" style="width: 14px; height: 14px; color: #3b82f6;"></i> Konfigurasi Database 3 (Supabase Mentoring - Akun Baru)
+              </span>
+              <span style="font-size: 0.725rem; background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">Super Cepat (&lt;50ms)</span>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+              Hubungkan ke project Supabase baru (email terpisah) khusus untuk antrean siswa mentoring &amp; transaksi Lynk.id tanpa membebani kuota LMS. Bebas limit 9KB Google Apps Script!
+            </p>
+            
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" style="font-size: 0.75rem;">Supabase Project URL (Project Baru)</label>
+              <input type="text" id="mentoringDbUrlInput" class="form-control" placeholder="https://xxxxxxxx.supabase.co" style="font-size: 0.8rem; font-family: monospace;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" style="font-size: 0.75rem;">Supabase API Key (anon public)</label>
+              <input type="password" id="mentoringDbKeyInput" class="form-control" placeholder="eyJhbGciOi..." style="font-size: 0.8rem; font-family: monospace;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label" style="font-size: 0.72rem;">Nama Tabel Antrean Mentoring</label>
+              <input type="text" id="mentoringDbTableInput" class="form-control" value="mentoring_members" placeholder="mentoring_members" style="font-size: 0.78rem;">
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="action-btn" style="flex: 1 1 180px; justify-content: center; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;" onclick="saveMentoringDbSettings()">
+                <i data-lucide="save"></i> Simpan Konfigurasi Database 3
+              </button>
+              <button class="action-btn btn-custom" style="flex: 1 1 140px; justify-content: center; color: #60a5fa; border-color: rgba(59, 130, 246, 0.4);" onclick="testMentoringDbConnection()">
+                <i data-lucide="plug"></i> Tes Koneksi DB 3
               </button>
             </div>
           </div>
@@ -4408,6 +4445,7 @@
         }
 
         try { loadSupabaseSettings(); } catch(eSup) {}
+        try { loadMentoringDbSettings(); } catch(eMdb) {}
 
         const cachedMembers = localStorage.getItem('ZETTBOS_MEMBER_CACHE_V2');
         if (cachedMembers) {
@@ -7121,6 +7159,87 @@
       if (tableInput) tableInput.value = cfg.table || 'whitelist_members';
       if (emailInput) emailInput.value = cfg.colEmail || 'email';
       if (nameInput) nameInput.value = cfg.colName || 'full_name';
+    }
+
+    async // ====================================================
+    // KONFIGURASI DATABASE 3 (SUPABASE CORE MENTORING BARU)
+    // ====================================================
+    function getMentoringDbConfig() {
+      const defaultCfg = {
+        url: '',
+        key: '',
+        table: 'mentoring_members'
+      };
+      let cfg = Object.assign({}, defaultCfg);
+      try {
+        const stored = localStorage.getItem('ZETTBOS_MENTORING_DB_CONFIG');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === 'object') {
+            if (parsed.url && parsed.url.trim()) cfg.url = parsed.url.trim();
+            if (parsed.key && parsed.key.trim()) cfg.key = parsed.key.trim();
+            if (parsed.table && parsed.table.trim()) cfg.table = parsed.table.trim();
+          }
+        }
+      } catch (e) { }
+      return cfg;
+    }
+
+    function saveMentoringDbSettings() {
+      const urlEl = document.getElementById('mentoringDbUrlInput');
+      const keyEl = document.getElementById('mentoringDbKeyInput');
+      const tableEl = document.getElementById('mentoringDbTableInput');
+
+      const url = (urlEl ? urlEl.value : '').trim();
+      const key = (keyEl ? keyEl.value : '').trim();
+      const table = (tableEl ? tableEl.value : 'mentoring_members').trim();
+
+      const cfg = { url, key, table };
+      try {
+        localStorage.setItem('ZETTBOS_MENTORING_DB_CONFIG', JSON.stringify(cfg));
+        showToast('Konfigurasi Database 3 (Supabase Mentoring) berhasil disimpan!');
+      } catch (e) {
+        showToast('Gagal menyimpan: ' + e.message);
+      }
+    }
+
+    function loadMentoringDbSettings() {
+      const cfg = getMentoringDbConfig();
+      const urlInput = document.getElementById('mentoringDbUrlInput');
+      const keyInput = document.getElementById('mentoringDbKeyInput');
+      const tableInput = document.getElementById('mentoringDbTableInput');
+
+      if (urlInput) urlInput.value = cfg.url || '';
+      if (keyInput) keyInput.value = cfg.key || '';
+      if (tableInput) tableInput.value = cfg.table || 'mentoring_members';
+    }
+
+    async function testMentoringDbConnection() {
+      const cfg = getMentoringDbConfig();
+      if (!cfg.url || !cfg.key) {
+        showToast('Harap isi Project URL dan API Key Database 3 terlebih dahulu.');
+        return;
+      }
+      showToast('Menguji koneksi ke Database 3 Supabase...');
+      try {
+        const cleanUrl = cfg.url.replace(/\/+$/, '');
+        const endpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(cfg.table) + '?select=*&limit=1';
+        const resp = await fetch(endpoint, {
+          method: 'GET',
+          headers: {
+            'apikey': cfg.key,
+            'Authorization': 'Bearer ' + cfg.key
+          }
+        });
+        if (resp.ok) {
+          showToast('✅ Berhasil terhubung ke Database 3! Tabel ' + cfg.table + ' aktif (<50ms).');
+        } else {
+          const errText = await resp.text();
+          showToast('⚠️ Gagal terhubung ke DB 3 (HTTP ' + resp.status + '): ' + errText.substring(0, 100));
+        }
+      } catch (err) {
+        showToast('❌ Kesalahan koneksi DB 3: ' + err.message);
+      }
     }
 
     async function testSupabaseConnection() {
