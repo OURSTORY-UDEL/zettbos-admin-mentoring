@@ -4878,14 +4878,26 @@
         return;
       }
 
-      const allCandidates = [...(activeMembers || []), ...(archivedMembers || [])];
+      let allCandidates = [...(activeMembers || []), ...(archivedMembers || [])];
       if (allCandidates.length === 0) {
-        showToast('Data member dari Spreadsheet belum termuat. Silakan klik Muat Ulang terlebih dahulu.');
+        showToast('Memuat data pendaftar dari Google Sheets...');
+        if (typeof fetchData === 'function') {
+          await fetchData(false);
+          allCandidates = [...(activeMembers || []), ...(archivedMembers || [])];
+        }
+      }
+
+      if (allCandidates.length === 0) {
+        showToast('Data member dari Spreadsheet belum dapat dimuat. Pastikan koneksi aktif.');
         return;
       }
 
+      const colEmail = cfg.colEmail || 'email';
+      const colName = cfg.colName || 'full_name';
+      const tableName = cfg.table || 'whitelist_members';
+
       openConfirmModal(
-        'Rekonstruksi & Impor <strong>' + allCandidates.length + '</strong> data pendaftar dari Google Sheets langsung ke tabel Supabase (<code>' + cfg.table + '</code>)?<br><br><small style="color:var(--text-muted); font-size:0.75rem; line-height:1.4;">Seluruh data akan dibersihkan terlebih dahulu: nama dirapikan, email divalidasi lowercase, nomor WhatsApp distandarisasi ke format internasional (62...), dan kolom-kolom yang tidak diperlukan dibuang.</small>',
+        'Rekonstruksi & Impor <strong>' + allCandidates.length + '</strong> data pendaftar dari Google Sheets langsung ke tabel Supabase (<code>' + tableName + '</code>)?<br><br><small style="color:var(--text-muted); font-size:0.75rem; line-height:1.4;">Seluruh data akan dibersihkan: email lowercase, nama terisi, nomor WA format 62..., dan dikirim secara batch aman.</small>',
         async function() {
           showToast('Memulai rekonstruksi data pendaftar...');
           
@@ -4905,8 +4917,8 @@
 
             if (!emailMap.has(cleanEmail)) {
               emailMap.set(cleanEmail, {
-                [cfg.colEmail]: cleanEmail,
-                [cfg.colName]: cleanName,
+                [colEmail]: cleanEmail,
+                [colName]: cleanName,
                 phone: cleanPhone,
                 created_at: createdAt
               });
@@ -4919,11 +4931,12 @@
             return;
           }
 
-          showToast('Mengimpor ' + payload.length + ' data bersih ke Supabase...');
+          showToast('Mengimpor ' + payload.length + ' data bersih ke Supabase (' + tableName + ')...');
 
           try {
             const cleanUrl = cfg.url.replace(/\/+$/, '');
-            const endpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(cfg.table);
+            // PostgREST mewajibkan ?on_conflict=email saat menggunakan Prefer: resolution=merge-duplicates!
+            const endpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(tableName) + '?on_conflict=' + encodeURIComponent(colEmail);
 
             const batchSize = 50;
             let successCount = 0;
@@ -4944,17 +4957,42 @@
 
               if (!resp.ok) {
                 lastErrorText = await resp.text();
-                // Coba fallback dengan return=minimal tanpa merge-duplicates jika postgrest constraint missing
+                console.warn('Batch attempt 1 failed:', lastErrorText);
+
+                // Fallback 1: Format core email + nama jika skema tabel Supabase belum ada phone/created_at
+                const coreBatch = batch.map(b => ({
+                  [colEmail]: b[colEmail],
+                  [colName]: b[colName]
+                }));
+
                 resp = await fetch(endpoint, {
                   method: 'POST',
                   headers: {
                     'apikey': cfg.key,
                     'Authorization': 'Bearer ' + cfg.key,
                     'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
+                    'Prefer': 'resolution=merge-duplicates'
                   },
-                  body: JSON.stringify(batch)
+                  body: JSON.stringify(coreBatch)
                 });
+
+                if (!resp.ok) {
+                  lastErrorText = await resp.text();
+                  console.warn('Batch attempt 2 failed:', lastErrorText);
+
+                  // Fallback 2: Plain POST return=minimal
+                  const plainEndpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(tableName);
+                  resp = await fetch(plainEndpoint, {
+                    method: 'POST',
+                    headers: {
+                      'apikey': cfg.key,
+                      'Authorization': 'Bearer ' + cfg.key,
+                      'Content-Type': 'application/json',
+                      'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(coreBatch)
+                  });
+                }
               }
 
               if (resp.ok) {
@@ -4966,15 +5004,23 @@
             }
 
             if (successCount > 0) {
-              showToast('✅ Sukses merekonstruksi & mengimpor ' + successCount + ' data ke Supabase (' + cfg.table + ')!');
+              showToast('✅ Sukses merekonstruksi & mengimpor ' + successCount + ' data ke Supabase (' + tableName + ')!');
               addAuditLog('🚀 Impor Rekonstruksi Supabase: ' + successCount + ' data');
-              checkUnconfirmedAgainstSupabase(null, true);
+              if (typeof checkUnconfirmedAgainstSupabase === 'function') {
+                checkUnconfirmedAgainstSupabase(null, true);
+              }
+              openConfirmModal(
+                '<strong>Sukses Mengimpor ke Whitelist LMS! 🎉</strong><br><br>Sebanyak <strong>' + successCount + '</strong> email pendaftar berhasil dimasukkan ke tabel <code>' + tableName + '</code> di Supabase.<br><br>Silakan periksa <strong>Table Editor</strong> di dashboard Supabase Anda.',
+                null,
+                'Tutup'
+              );
             } else {
-              handleSupabaseImportFailure('whitelist', cfg.table, lastErrorText);
+              handleSupabaseImportFailure('whitelist', tableName, lastErrorText);
             }
           } catch (err) {
             console.error('Import Supabase Error:', err);
             showToast('Terjadi kesalahan saat impor: ' + err.message);
+            handleSupabaseImportFailure('whitelist', tableName, err.message);
           }
         },
         'Mulai Impor'
@@ -4991,9 +5037,18 @@
         return;
       }
 
-      const allCandidates = [...(activeMembers || []), ...(archivedMembers || [])];
+      // Jika memori member lokal kosong, otomatis fetch dari Google Sheets terlebih dahulu!
+      let allCandidates = [...(activeMembers || []), ...(archivedMembers || [])];
       if (allCandidates.length === 0) {
-        showToast('Data member dari Spreadsheet belum termuat. Silakan klik Muat Ulang terlebih dahulu.');
+        showToast('Memuat data member terbaru dari Google Sheets...');
+        if (typeof fetchData === 'function') {
+          await fetchData(false);
+          allCandidates = [...(activeMembers || []), ...(archivedMembers || [])];
+        }
+      }
+
+      if (allCandidates.length === 0) {
+        showToast('Data member dari Spreadsheet belum dapat ditarik. Pastikan koneksi aktif.');
         return;
       }
 
@@ -5019,7 +5074,7 @@
             if (createdAt === 'Invalid Date' || !createdAt) createdAt = new Date().toISOString();
 
             const status = m.isDone ? 'archived' : 'active';
-            const batasWaktu = m.batasWaktu || null;
+            const batasWaktu = m.batasWaktu || m.batasMentoring || null;
             const kategori = m.kategori || m.jenisPaket || 'Private Mentoring';
             const memberNum = m.memberNumber || null;
 
@@ -5048,7 +5103,8 @@
 
           try {
             const cleanUrl = (cfg.url || '').replace(/\/+$/, '');
-            const endpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(tableName);
+            // PostgREST mewajibkan ?on_conflict=email saat menggunakan Prefer: resolution=merge-duplicates!
+            const endpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(tableName) + '?on_conflict=email';
 
             const batchSize = 50;
             let successCount = 0;
@@ -5069,17 +5125,45 @@
 
               if (!resp.ok) {
                 lastErrorText = await resp.text();
-                // Coba fallback dengan return=minimal tanpa merge-duplicates jika error constraint
+                console.warn('Batch attempt 1 failed:', lastErrorText);
+
+                // Fallback 1: Coba dengan kolom inti saja jika ada kolom ekstra yang belum ada di tabel Supabase
+                const minimalBatch = batch.map(b => ({
+                  email: b.email,
+                  full_name: b.full_name,
+                  whatsapp: b.whatsapp,
+                  status: b.status,
+                  registered_at: b.registered_at
+                }));
+
                 resp = await fetch(endpoint, {
                   method: 'POST',
                   headers: {
                     'apikey': cfg.key,
                     'Authorization': 'Bearer ' + cfg.key,
                     'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
+                    'Prefer': 'resolution=merge-duplicates'
                   },
-                  body: JSON.stringify(batch)
+                  body: JSON.stringify(minimalBatch)
                 });
+
+                if (!resp.ok) {
+                  lastErrorText = await resp.text();
+                  console.warn('Batch attempt 2 (minimal) failed:', lastErrorText);
+
+                  // Fallback 2: Coba endpoint tanpa query param tapi dengan return=minimal
+                  const plainEndpoint = cleanUrl + '/rest/v1/' + encodeURIComponent(tableName);
+                  resp = await fetch(plainEndpoint, {
+                    method: 'POST',
+                    headers: {
+                      'apikey': cfg.key,
+                      'Authorization': 'Bearer ' + cfg.key,
+                      'Content-Type': 'application/json',
+                      'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(minimalBatch)
+                  });
+                }
               }
 
               if (resp.ok) {
@@ -5093,12 +5177,18 @@
             if (successCount > 0) {
               showToast('✅ Sukses merekonstruksi & mengimpor ' + successCount + ' data member ke Database 3!');
               addAuditLog('🚀 Impor Database 3 Mentoring: ' + successCount + ' member');
+              openConfirmModal(
+                '<strong>Sukses Mengimpor ke Supabase! 🎉</strong><br><br>Sebanyak <strong>' + successCount + '</strong> data member mentoring berhasil dimasukkan ke tabel <code>' + tableName + '</code> di Supabase.<br><br>Silakan periksa <strong>Table Editor</strong> di dashboard Supabase Anda.',
+                null,
+                'Tutup'
+              );
             } else {
               handleSupabaseImportFailure('mentoring', tableName, lastErrorText);
             }
           } catch (err) {
             console.error('Import DB 3 Error:', err);
             showToast('Terjadi kesalahan saat impor DB 3: ' + err.message);
+            handleSupabaseImportFailure('mentoring', tableName, err.message);
           }
         },
         'Mulai Impor DB 3'
@@ -5201,7 +5291,7 @@
       });
     }
 
-    function copySupabaseSqlScript() {
+        function copySupabaseSqlScript() {
       const el = document.getElementById('supabaseSqlCodeTextarea');
       if (el) {
         el.select();
@@ -7997,6 +8087,13 @@
       try {
         localStorage.setItem('ZETTBOS_SUPABASE_CONFIG', JSON.stringify(cfg));
         showToast('Konfigurasi Supabase berhasil disimpan!');
+        openConfirmModal(
+          'Konfigurasi Supabase Whitelist LMS berhasil disimpan!<br><br>Apakah Anda ingin langsung <strong>mengimpor email pendaftar dari Google Sheets ke Whitelist LMS Supabase sekarang</strong>?',
+          function() {
+            reconstructAndImportSheetToSupabase();
+          },
+          'Ya, Impor Sekarang'
+        );
       } catch (e) {
         showToast('Gagal menyimpan ke penyimpanan lokal: ' + e.message);
       }
@@ -8054,6 +8151,13 @@
       try {
         localStorage.setItem('ZETTBOS_MENTORING_DB_CONFIG', JSON.stringify(cfg));
         showToast('Konfigurasi Database 3 (Supabase Mentoring) berhasil disimpan!');
+        openConfirmModal(
+          'Konfigurasi Database 3 berhasil disimpan!<br><br>Apakah Anda ingin langsung <strong>mengimpor seluruh data member Google Sheets ke Supabase sekarang</strong>?',
+          function() {
+            reconstructAndImportMentoringMembersToSupabase();
+          },
+          'Ya, Impor Sekarang'
+        );
       } catch (e) {
         showToast('Gagal menyimpan: ' + e.message);
       }
@@ -10402,15 +10506,33 @@
     }
 
     // Modal Generic Controls
-    function openPreviewModal(title, bodyHtml, confirmText, confirmClass, onConfirmCallback) {
-      document.getElementById('previewTitle').innerText = title;
-      document.getElementById('previewBody').innerHTML = bodyHtml;
+    function openPreviewModal(titleOrConfig, bodyHtml, confirmText, confirmClass, onConfirmCallback) {
+      let title = titleOrConfig;
+      let body = bodyHtml;
+      let confText = confirmText || 'Konfirmasi';
+      let confClass = confirmClass || 'confirm';
+      let cb = onConfirmCallback;
+
+      if (typeof titleOrConfig === 'object' && titleOrConfig !== null) {
+        title = titleOrConfig.title || 'Pratinjau';
+        body = titleOrConfig.customHtml || titleOrConfig.bodyHtml || titleOrConfig.body || '';
+        confText = titleOrConfig.confirmText || 'Tutup';
+        confClass = titleOrConfig.confirmClass || 'confirm-gold';
+        cb = titleOrConfig.onConfirmCallback || titleOrConfig.onConfirm || null;
+      }
+
+      const titleEl = document.getElementById('previewTitle');
+      if (titleEl) titleEl.innerText = title;
+      const bodyEl = document.getElementById('previewBody');
+      if (bodyEl) bodyEl.innerHTML = body;
 
       const confirmBtn = document.getElementById('previewConfirmBtn');
-      confirmBtn.innerText = confirmText;
-      confirmBtn.className = 'preview-action-btn ' + confirmClass;
+      if (confirmBtn) {
+        confirmBtn.innerText = confText;
+        confirmBtn.className = 'preview-action-btn ' + confClass;
+      }
 
-      currentActionCallback = onConfirmCallback;
+      currentActionCallback = cb;
 
       const backdrop = document.getElementById('previewBackdrop');
       const modal = document.getElementById('previewModal');
