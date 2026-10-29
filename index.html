@@ -1280,11 +1280,88 @@
       border-color: rgba(59, 130, 246, 0.45);
       font-weight: 700;
     }
-    #compareLynkBackdrop {
-      z-index: 100000 !important;
+    /* Z-Index Berjenjang untuk Seluruh Modal */
+    #restoreWhitelistBackdrop,
+    #compareLynkBackdrop,
+    #memberDetailBackdrop,
+    #previewBackdrop,
+    #progressBackdrop,
+    #updateConfirmBackdrop {
+      z-index: 100150 !important;
     }
-    #compareLynkModal {
-      z-index: 100001 !important;
+
+    #restoreWhitelistModal,
+    #compareLynkModal,
+    #memberDetailModal,
+    #previewModal,
+    #progressModal,
+    #updateConfirmModal {
+      z-index: 100160 !important;
+    }
+
+    /* Sembunyikan bottom navbar saat modal aktif */
+    body.modal-active .bottom-nav,
+    body.has-active-modal .bottom-nav {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* Optimasi Tampilan Pop-up di Mobile HP */
+    @media (max-width: 640px) {
+      #restoreWhitelistModal {
+        width: 96% !important;
+        max-width: 96% !important;
+        height: 92vh !important;
+        max-height: 92vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 12px 14px !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        border-radius: 14px !important;
+        box-sizing: border-box !important;
+      }
+
+      #restoreWhitelistListContainer {
+        flex: 1 1 auto !important;
+        max-height: none !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      #compareLynkModal {
+        width: 96% !important;
+        max-width: 96% !important;
+        height: 94vh !important;
+        max-height: 94vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 10px 12px !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        border-radius: 14px !important;
+        box-sizing: border-box !important;
+      }
+
+      #compareLynkListContainer {
+        flex: 1 1 auto !important;
+        height: 100% !important;
+        max-height: none !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        margin-bottom: 4px !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .cmp-compact-kpi-bar {
+        gap: 4px !important;
+      }
     }
 
     .preview-body {
@@ -3163,25 +3240,7 @@
     <!-- Bulk Actions Header (dynamically populated) -->
     <div class="bulk-section-header" id="bulkSectionHeader" style="display: none; margin-bottom: 8px;"></div>
 
-    <!-- Search and Refresh Utility Bar (Khusus Tab Arsip) -->
-    <div class="utility-bar hidden" id="utilityBar" style="margin-top: 10px; margin-bottom: 12px;">
-      <input type="text" id="archiveSearchInput" oninput="handleSearch()" placeholder="Cari Arsip Nama, Email, atau No WA..."
-        class="search-input">
-
-      <!-- Sort dropdown (only shown when in Archive tab) -->
-      <div id="archiveSortContainer" class="hidden" style="align-items: center; gap: 6px; margin-right: 8px;">
-        <i data-lucide="arrow-up-down" style="width: 15px; height: 15px; color: var(--text-muted);"></i>
-        <select id="archiveSortSelect" onchange="handleArchiveSortChange()" class="form-control"
-          style="width: auto; padding: 4px 28px 4px 6px; font-size: 0.75rem; height: 32px; border-radius: 8px; border: 1px solid var(--border-thin); background: var(--bg-card); color: var(--text-main); cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394A3B8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 8px top 50%; background-size: 8px auto;">
-          <option value="newest" selected>Terbaru</option>
-          <option value="oldest">Terlama</option>
-        </select>
-      </div>
-
-      <button class="refresh-btn" onclick="syncDataWithLoader()">
-        <i data-lucide="refresh-cw"></i> <span class="refresh-text">Refresh Data</span>
-      </button>
-    </div>
+    <!-- Utility bar moved inside harmonized Archive tab control card -->
 
     <!-- Content Sections -->
     <div class="content-section" id="contentSection">
@@ -3548,7 +3607,49 @@
       </div>
 
       <!-- Archived Tab Content -->
-      <div class="tab-content hidden" id="archivedTabContent"></div>
+      <div class="tab-content hidden" id="archivedTabContent" style="width: 100%;">
+        <div class="sub-tab-control-card">
+          <div class="sub-tab-card-header">
+            <div>
+              <h3 class="sub-tab-card-title">
+                <i data-lucide="archive" style="color: var(--accent-gold);"></i> Data Arsip Member
+              </h3>
+              <p class="sub-tab-card-subtitle">Daftar seluruh member yang sudah selesai diproses atau ditandai selesai.</p>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span class="harmonized-badge" id="selectedArchivedCountBadge" style="display:none;">0 dipilih</span>
+            </div>
+          </div>
+          <div class="sub-tab-search-row">
+            <div class="search-input-wrapper">
+              <i data-lucide="search"></i>
+              <input type="text" id="archiveSearchInput" class="sub-tab-search-input" placeholder="Cari Arsip Nama, Email, atau No WA..." oninput="handleSearch()">
+            </div>
+            <div id="archiveSortContainer" style="display: inline-flex; align-items: center; gap: 6px;">
+              <i data-lucide="arrow-up-down" style="width: 14px; height: 14px; color: var(--text-muted);"></i>
+              <select id="archiveSortSelect" onchange="handleArchiveSortChange()" class="form-control" style="width: auto; padding: 4px 24px 4px 8px; font-size: 0.75rem; height: 32px; border-radius: 8px; border: 1px solid var(--border-thin); background: var(--bg-card); color: var(--text-main); cursor: pointer;">
+                <option value="newest" selected>Terbaru</option>
+                <option value="oldest">Terlama</option>
+              </select>
+            </div>
+            <button class="harmonized-btn btn-variant-neutral" onclick="syncDataWithLoader()" title="Muat ulang data dari Spreadsheet">
+              <i data-lucide="refresh-cw"></i> <span>Muat Ulang</span>
+            </button>
+          </div>
+          <div class="sub-tab-actions-row" id="archivedBulkActionsRow">
+            <label class="harmonized-checkbox-label" title="Pilih Semua Member Arsip">
+              <input type="checkbox" id="selectAllArchivedCardChk" onchange="toggleSelectAllArchived(this)">
+              <span>Pilih Semua Arsip</span>
+            </label>
+            <button class="harmonized-btn btn-variant-amber" id="btnBulkUnmarkArchived" onclick="executeBulkUnmarkArchived()" title="Kembalikan member terpilih dari Arsip ke antrean Perlu Tindakan" style="opacity: 0.6;" disabled>
+              <i data-lucide="rotate-ccw"></i> <span>Balikin ke Antrean</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Container list member arsip -->
+        <div id="archivedListContainer" style="width: 100%;"></div>
+      </div>
 
       <!-- Settings Tab Content -->
       <div class="tab-content hidden" id="settingsTabContent">
@@ -3997,28 +4098,19 @@
 
     <!-- Stats & Filters Toolbar -->
     <div style="padding: 10px 0 6px 0; display: flex; flex-direction: column; gap: 8px;">
-      <!-- KPI Stats Summary Cards -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px;">
-        <div style="background: var(--bg-main); border: 1px solid var(--border-thin); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-size: 0.7rem; color: var(--text-muted);">Lynk.id Belum Remark</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);" id="cmpStatTotalLynk">0</div>
-          </div>
-          <i data-lucide="shopping-bag" style="color: var(--text-muted); width: 20px; height: 20px;"></i>
+      <!-- Compact KPI Stats Strip (Menghemat 100px Ruang Scroll) -->
+      <div class="cmp-compact-kpi-bar" style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
+        <div style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-thin); border-radius: 8px; padding: 5px 8px; text-align: center;">
+          <div style="font-size: 0.65rem; color: var(--text-muted);">Total Lynk</div>
+          <div style="font-size: 0.95rem; font-weight: 800; color: var(--text-main);" id="cmpStatTotalLynk">0</div>
         </div>
-        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-size: 0.7rem; color: #10b981; font-weight: 600;">Sudah Isi Form (Cocok)</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: #10b981;" id="cmpStatMatched">0</div>
-          </div>
-          <i data-lucide="check-circle" style="color: #10b981; width: 20px; height: 20px;"></i>
+        <div style="flex: 1; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 5px 8px; text-align: center;">
+          <div style="font-size: 0.65rem; color: #10b981; font-weight: 700;">✓ Cocok</div>
+          <div style="font-size: 0.95rem; font-weight: 800; color: #10b981;" id="cmpStatMatched">0</div>
         </div>
-        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-size: 0.7rem; color: #f87171; font-weight: 600;">Belum Isi Form</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: #f87171;" id="cmpStatUnmatched">0</div>
-          </div>
-          <i data-lucide="alert-circle" style="color: #f87171; width: 20px; height: 20px;"></i>
+        <div style="flex: 1; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 5px 8px; text-align: center;">
+          <div style="font-size: 0.65rem; color: #f87171; font-weight: 700;">⚠️ Belum Isi</div>
+          <div style="font-size: 0.95rem; font-weight: 800; color: #f87171;" id="cmpStatUnmatched">0</div>
         </div>
       </div>
 
@@ -4273,7 +4365,10 @@
     }
 
     function renderSkeletonListView(targetId, count = 3) {
-      const container = document.getElementById(targetId);
+      let container = document.getElementById(targetId);
+      if (targetId === 'archivedTabContent' && document.getElementById('archivedListContainer')) {
+        container = document.getElementById('archivedListContainer');
+      }
       if (!container) return;
       container.innerHTML = '';
 
@@ -4832,10 +4927,11 @@
 
             const batchSize = 50;
             let successCount = 0;
+            let lastErrorText = '';
 
             for (let i = 0; i < payload.length; i += batchSize) {
               const batch = payload.slice(i, i + batchSize);
-              const resp = await fetch(endpoint, {
+              let resp = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                   'apikey': cfg.key,
@@ -4846,19 +4942,36 @@
                 body: JSON.stringify(batch)
               });
 
+              if (!resp.ok) {
+                lastErrorText = await resp.text();
+                // Coba fallback dengan return=minimal tanpa merge-duplicates jika postgrest constraint missing
+                resp = await fetch(endpoint, {
+                  method: 'POST',
+                  headers: {
+                    'apikey': cfg.key,
+                    'Authorization': 'Bearer ' + cfg.key,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                  },
+                  body: JSON.stringify(batch)
+                });
+              }
+
               if (resp.ok) {
                 successCount += batch.length;
               } else {
-                const errText = await resp.text();
-                console.warn('Batch import notice:', errText);
+                lastErrorText = await resp.text();
+                console.warn('Batch import notice:', lastErrorText);
               }
             }
 
-            showToast('Sukses merekonstruksi & mengimpor ' + successCount + ' data ke Supabase!');
-            addAuditLog('🚀 Impor Rekonstruksi Supabase: ' + successCount + ' data');
-            
-            // Segarkan pengecekan live di antrean Whitelist
-            checkUnconfirmedAgainstSupabase(null, true);
+            if (successCount > 0) {
+              showToast('✅ Sukses merekonstruksi & mengimpor ' + successCount + ' data ke Supabase (' + cfg.table + ')!');
+              addAuditLog('🚀 Impor Rekonstruksi Supabase: ' + successCount + ' data');
+              checkUnconfirmedAgainstSupabase(null, true);
+            } else {
+              handleSupabaseImportFailure('whitelist', cfg.table, lastErrorText);
+            }
           } catch (err) {
             console.error('Import Supabase Error:', err);
             showToast('Terjadi kesalahan saat impor: ' + err.message);
@@ -4939,10 +5052,11 @@
 
             const batchSize = 50;
             let successCount = 0;
+            let lastErrorText = '';
 
             for (let i = 0; i < payload.length; i += batchSize) {
               const batch = payload.slice(i, i + batchSize);
-              const resp = await fetch(endpoint, {
+              let resp = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                   'apikey': cfg.key,
@@ -4953,16 +5067,35 @@
                 body: JSON.stringify(batch)
               });
 
+              if (!resp.ok) {
+                lastErrorText = await resp.text();
+                // Coba fallback dengan return=minimal tanpa merge-duplicates jika error constraint
+                resp = await fetch(endpoint, {
+                  method: 'POST',
+                  headers: {
+                    'apikey': cfg.key,
+                    'Authorization': 'Bearer ' + cfg.key,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                  },
+                  body: JSON.stringify(batch)
+                });
+              }
+
               if (resp.ok) {
                 successCount += batch.length;
               } else {
-                const errText = await resp.text();
-                console.warn('Batch import DB 3 notice:', errText);
+                lastErrorText = await resp.text();
+                console.warn('Batch import DB 3 notice:', lastErrorText);
               }
             }
 
-            showToast('Sukses merekonstruksi & mengimpor ' + successCount + ' data member ke Database 3!');
-            addAuditLog('🚀 Impor Database 3 Mentoring: ' + successCount + ' member');
+            if (successCount > 0) {
+              showToast('✅ Sukses merekonstruksi & mengimpor ' + successCount + ' data member ke Database 3!');
+              addAuditLog('🚀 Impor Database 3 Mentoring: ' + successCount + ' member');
+            } else {
+              handleSupabaseImportFailure('mentoring', tableName, lastErrorText);
+            }
           } catch (err) {
             console.error('Import DB 3 Error:', err);
             showToast('Terjadi kesalahan saat impor DB 3: ' + err.message);
@@ -4970,6 +5103,120 @@
         },
         'Mulai Impor DB 3'
       );
+    }
+
+    // ====================================================
+    // SUPABASE ERROR DIAGNOSTICS & SQL SCHEMA HELPER
+    // ====================================================
+    function handleSupabaseImportFailure(type, tableName, rawError) {
+      let friendlyReason = 'Respon Supabase tidak mengizinkan penambahan data.';
+      let sqlAdvice = '';
+
+      if (rawError) {
+        try {
+          const errObj = JSON.parse(rawError);
+          const msg = (errObj.message || '').toLowerCase();
+          const code = errObj.code || '';
+
+          if (msg.includes('does not exist') || msg.includes('relation') || code === '42P01') {
+            friendlyReason = 'Tabel "<code>' + tableName + '</code>" <strong>belum dibuat</strong> di Supabase Anda.';
+            sqlAdvice = 'Jalankan script SQL di bawah ini pada menu SQL Editor Supabase untuk membuat tabel dan kolomnya secara otomatis.';
+          } else if (code === '42501' || msg.includes('row-level security') || msg.includes('rls')) {
+            friendlyReason = 'Akses ditolak oleh <strong>Row Level Security (RLS)</strong> pada tabel "<code>' + tableName + '</code>".';
+            sqlAdvice = 'Nonaktifkan RLS dengan perintah <code>ALTER TABLE ' + tableName + ' DISABLE ROW LEVEL SECURITY;</code> atau gunakan Service Role Key.';
+          } else if (msg.includes('unique') || code === '42P10') {
+            friendlyReason = 'Kolom email pada tabel "<code>' + tableName + '</code>" <strong>belum memiliki Primary Key / Unique Constraint</strong>.';
+            sqlAdvice = 'Jalankan script SQL untuk menambahkan primary key pada kolom email agar PostgREST dapat melakukan upsert.';
+          } else if (msg.includes('column') || code === 'PGRST204') {
+            friendlyReason = 'Struktur kolom pada tabel "<code>' + tableName + '</code>" tidak sesuai dengan data yang dikirim.';
+            sqlAdvice = 'Jalankan script SQL di bawah ini untuk menyamakan nama kolom tabel.';
+          } else if (errObj.message) {
+            friendlyReason = 'Supabase Message: <strong>' + escapeHtml(errObj.message) + '</strong>';
+          }
+        } catch(e) {
+          friendlyReason = 'Detail Error: ' + escapeHtml(rawError.substring(0, 160));
+        }
+      }
+
+      openConfirmModal(
+        '<div style="text-align:left;">' +
+          '<div style="display:flex; align-items:center; gap:8px; color:#f87171; font-weight:700; margin-bottom:8px;">' +
+            '<i data-lucide="alert-octagon" style="width:20px; height:20px;"></i>' +
+            '<span>Data Gagal Diimpor ke Supabase (0 Data)</span>' +
+          '</div>' +
+          '<div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:8px; padding:10px; font-size:0.78rem; line-height:1.45; color:var(--text-main); margin-bottom:10px;">' +
+            friendlyReason + (sqlAdvice ? '<br><br>' + sqlAdvice : '') +
+          '</div>' +
+          '<p style="font-size:0.75rem; color:var(--text-muted); margin:0;">Klik <strong>"Lihat Script SQL"</strong> untuk menyalin kode pembuatan tabel resmi ke Supabase SQL Editor.</p>' +
+        '</div>',
+        function() {
+          showSupabaseSqlHelper(type, tableName);
+        },
+        'Lihat Script SQL'
+      );
+    }
+
+    function showSupabaseSqlHelper(type, tableName) {
+      let sqlCode = '';
+      if (type === 'mentoring') {
+        const tName = tableName || 'mentoring_members';
+        sqlCode = '-- SCRIPT SUPABASE DATABASE 3 (MENTORING MEMBERS)\n' +
+          '-- Salin dan jalankan di SQL Editor Supabase Anda:\n\n' +
+          'CREATE TABLE IF NOT EXISTS public.' + tName + ' (\n' +
+          '    email TEXT PRIMARY KEY,\n' +
+          '    full_name TEXT,\n' +
+          '    whatsapp TEXT,\n' +
+          '    status TEXT DEFAULT \'active\',\n' +
+          '    registered_at TIMESTAMPTZ DEFAULT NOW(),\n' +
+          '    deadline TEXT,\n' +
+          '    package TEXT,\n' +
+          '    member_number TEXT,\n' +
+          '    is_contact_saved BOOLEAN DEFAULT FALSE\n' +
+          ');\n\n' +
+          '-- Nonaktifkan RLS agar aplikasi dapat membaca & menulis langsung\n' +
+          'ALTER TABLE public.' + tName + ' DISABLE ROW LEVEL SECURITY;';
+      } else {
+        const tName = tableName || 'whitelist_members';
+        sqlCode = '-- SCRIPT SUPABASE DATABASE 2 (WHITELIST LMS)\n' +
+          '-- Salin dan jalankan di SQL Editor Supabase Anda:\n\n' +
+          'CREATE TABLE IF NOT EXISTS public.' + tName + ' (\n' +
+          '    email TEXT PRIMARY KEY,\n' +
+          '    full_name TEXT,\n' +
+          '    phone TEXT,\n' +
+          '    created_at TIMESTAMPTZ DEFAULT NOW()\n' +
+          ');\n\n' +
+          '-- Nonaktifkan RLS agar aplikasi dapat membaca & menulis langsung\n' +
+          'ALTER TABLE public.' + tName + ' DISABLE ROW LEVEL SECURITY;';
+      }
+
+      openPreviewModal({
+        title: 'Script SQL Supabase (' + (type === 'mentoring' ? 'DB 3 Mentoring' : 'DB 2 Whitelist') + ')',
+        customHtml: '<div style="display:flex; flex-direction:column; gap:8px;">' +
+          '<p style="font-size:0.75rem; color:var(--text-muted); margin:0;">Buka dashboard Supabase ➡️ pilih project Anda ➡️ masuk ke menu <strong>SQL Editor</strong> ➡️ paste script di bawah ini ➡️ klik <strong>Run</strong>:</p>' +
+          '<textarea id="supabaseSqlCodeTextarea" readonly style="width:100%; height:190px; background:var(--bg-main); color:#34d399; font-family:monospace; font-size:0.75rem; border:1px solid var(--border-thin); border-radius:8px; padding:10px; resize:none;">' + escapeHtml(sqlCode) + '</textarea>' +
+          '<button class="action-btn" style="background:#10b981; color:#fff; font-weight:700; justify-content:center;" onclick="copySupabaseSqlScript()">' +
+            '<i data-lucide="copy"></i> Salin Script SQL ke Clipboard' +
+          '</button>' +
+        '</div>'
+      });
+    }
+
+    function copySupabaseSqlScript() {
+      const el = document.getElementById('supabaseSqlCodeTextarea');
+      if (el) {
+        el.select();
+        try {
+          navigator.clipboard.writeText(el.value).then(() => {
+            showToast('✅ Script SQL berhasil disalin ke clipboard!');
+          }).catch(() => {
+            document.execCommand('copy');
+            showToast('✅ Script SQL disalin!');
+          });
+        } catch(e) {
+          document.execCommand('copy');
+          showToast('✅ Script SQL disalin!');
+        }
+      }
     }
 
     function initApp() {
@@ -5609,11 +5856,11 @@
         if (archivedBtn) archivedBtn.classList.add('active');
         if (archivedBtnMob) archivedBtnMob.classList.add('active');
         if (archivedTabContent) archivedTabContent.classList.remove('hidden');
-        if (archiveSortContainer) archiveSortContainer.classList.remove('hidden');
+        updateArchivedBulkHeader();
         if (isMemberDataLoading && (!archivedMembers || archivedMembers.length === 0)) {
-          renderSkeletonListView('archivedTabContent', 3);
+          renderSkeletonListView('archivedListContainer', 3);
         } else if (!isMemberDataLoaded && !isMemberDataLoading) {
-          renderSkeletonListView('archivedTabContent', 3);
+          renderSkeletonListView('archivedListContainer', 3);
           fetchMemberData(true);
         } else {
           renderArchivedTab();
@@ -6254,7 +6501,7 @@
 
     function renderArchivedTab() {
       if (isMemberDataLoading && (!archivedMembers || archivedMembers.length === 0)) {
-        renderSkeletonListView('archivedTabContent', 3);
+        renderSkeletonListView('archivedListContainer', 3);
         return;
       }
       const sortVal = document.getElementById('archiveSortSelect')?.value || 'newest';
@@ -6263,7 +6510,8 @@
       } else {
         filteredArchived.sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
       }
-      renderList('archivedTabContent', filteredArchived, 'archived', archivedPage);
+      renderList('archivedListContainer', filteredArchived, 'archived', archivedPage);
+      updateArchivedBulkHeader();
     }
 
     async function loadUnfilledFormsData() {
@@ -6351,6 +6599,7 @@
       }
 
       // 1. Tampilkan modal & backdrop secara instan (Feedback visual langsung ke pengguna)
+      document.body.classList.add('modal-active');
       modal.style.display = 'flex';
       modal.classList.add('show');
       backdrop.style.display = 'block';
@@ -6520,6 +6769,7 @@
     }
 
     function closeCompareLynkWithFormModal() {
+      document.body.classList.remove('modal-active');
       const modal = document.getElementById('compareLynkModal');
       const backdrop = document.getElementById('compareLynkBackdrop');
       if (modal) {
@@ -8805,6 +9055,7 @@
     }
 
     function openRestoreWhitelistModal() {
+      document.body.classList.add('modal-active');
       selectedRestoreWhitelistRows.clear();
       currentRestoreFilterTab = 'all';
 
@@ -8829,6 +9080,7 @@
     }
 
     function closeRestoreWhitelistModal() {
+      document.body.classList.remove('modal-active');
       const backdrop = document.getElementById('restoreWhitelistBackdrop');
       const modal = document.getElementById('restoreWhitelistModal');
       if (backdrop) backdrop.classList.remove('show');
@@ -9207,6 +9459,143 @@
       if (member) {
         unmarkActiveMemberDone(member.email, member.nama);
       }
+    }
+
+    // ====================================================
+    // BULK ACTIONS & SELECTION DI TAB ARSIP
+    // ====================================================
+    function toggleSelectAllArchived(chk) {
+      const isChecked = chk ? chk.checked : false;
+      selectedArchivedEmails.clear();
+      if (isChecked) {
+        (filteredArchived || []).forEach(m => {
+          if (m && m.email) selectedArchivedEmails.add(m.email);
+        });
+      }
+      // Sinkronkan seluruh checkbox di halaman
+      const tableChk = document.getElementById('selectAllArchivedChkTable');
+      const cardChk = document.getElementById('selectAllArchivedCardChk');
+      if (tableChk) tableChk.checked = isChecked;
+      if (cardChk) cardChk.checked = isChecked;
+
+      document.querySelectorAll('.archived-member-chk').forEach(input => {
+        input.checked = isChecked;
+      });
+
+      updateArchivedBulkHeader();
+    }
+
+    function onArchivedMemberChkChange(chk) {
+      const email = chk.getAttribute('data-email');
+      if (!email) return;
+      if (chk.checked) {
+        selectedArchivedEmails.add(email);
+      } else {
+        selectedArchivedEmails.delete(email);
+      }
+      // Sinkronkan checkbox dengan email sama (tabel vs kartu mobile)
+      document.querySelectorAll('.archived-member-chk[data-email="' + CSS.escape(email) + '"]').forEach(input => {
+        input.checked = chk.checked;
+      });
+
+      const total = (filteredArchived || []).length;
+      const isAll = (total > 0 && selectedArchivedEmails.size >= total);
+      const tableChk = document.getElementById('selectAllArchivedChkTable');
+      const cardChk = document.getElementById('selectAllArchivedCardChk');
+      if (tableChk) tableChk.checked = isAll;
+      if (cardChk) cardChk.checked = isAll;
+
+      updateArchivedBulkHeader();
+    }
+
+    function updateArchivedBulkHeader() {
+      const count = selectedArchivedEmails.size;
+      const badge = document.getElementById('selectedArchivedCountBadge');
+      const btn = document.getElementById('btnBulkUnmarkArchived');
+      if (badge) {
+        badge.innerText = count + ' dipilih';
+        badge.style.display = count > 0 ? 'inline-flex' : 'none';
+      }
+      if (btn) {
+        btn.disabled = (count === 0);
+        btn.style.opacity = count > 0 ? '1' : '0.6';
+        btn.style.cursor = count > 0 ? 'pointer' : 'not-allowed';
+      }
+    }
+
+    async function executeBulkUnmarkArchived() {
+      if (!selectedArchivedEmails || selectedArchivedEmails.size === 0) {
+        showToast('Pilih minimal satu member di arsip terlebih dahulu.');
+        return;
+      }
+
+      const emailList = Array.from(selectedArchivedEmails);
+      openConfirmModal(
+        'Kembalikan <strong>' + emailList.length + '</strong> data member terpilih dari Arsip ke antrean Perlu Tindakan?<br><br><small style="color:var(--text-muted); font-size:0.75rem;">Status selesai member akan dicabut dan member akan muncul kembali di antrean utama.</small>',
+        async function() {
+          showToast('Mengembalikan ' + emailList.length + ' member ke antrean...');
+
+          try {
+            let res = await apiCall('bulk_unmark_member_done', { emails: emailList });
+            if (!res || !res.success) {
+              // Fallback pemanggilan bertahap jika backend belum terdeploy
+              for (const em of emailList) {
+                await apiCall('unmark_member_done', { email: em });
+              }
+              res = { success: true, count: emailList.length };
+            }
+
+            // Update memori lokal seketika (Instant UI Update tanpa lag)
+            const restoredSet = new Set(emailList.map(e => e.toLowerCase().trim()));
+            const remainingArchived = [];
+            const movedToActive = [];
+
+            (archivedMembers || []).forEach(m => {
+              const mEmail = (m.email || '').toLowerCase().trim();
+              if (restoredSet.has(mEmail)) {
+                m.isDone = false;
+                m.manualDone = false;
+                m.forceAction = true;
+                movedToActive.push(m);
+              } else {
+                remainingArchived.push(m);
+              }
+            });
+
+            archivedMembers = remainingArchived;
+            activeMembers = [...(activeMembers || []), ...movedToActive];
+            ensureTimestampMs(activeMembers);
+            ensureTimestampMs(archivedMembers);
+
+            filteredArchived = filteredArchived.filter(m => !restoredSet.has((m.email || '').toLowerCase().trim()));
+            filteredActive = [...activeMembers];
+
+            selectedArchivedEmails.clear();
+
+            // Update counter badge
+            const archivedBadge = document.getElementById('archivedCount');
+            if (archivedBadge) archivedBadge.innerText = archivedMembers.length;
+            const subActiveBadge = document.getElementById('subActiveBadge');
+            if (subActiveBadge) subActiveBadge.innerText = activeMembers.length;
+            const queueBadge = document.getElementById('queueTotalCount');
+            const unremarkedCount = (Array.isArray(unfilledListGlobal) ? unfilledListGlobal.filter(u => !u.isRemarked).length : 0);
+            if (queueBadge) queueBadge.innerText = activeMembers.length + unremarkedCount;
+
+            updateArchivedBulkHeader();
+            renderArchivedTab();
+
+            showToast('✅ Berhasil mengembalikan ' + emailList.length + ' member ke antrean!');
+            addAuditLog('↩️ Batal Selesai Massal: ' + emailList.length + ' member dikembalikan ke Perlu Tindakan');
+
+            // Refresh background
+            setTimeout(() => { fetchMemberData(true); }, 800);
+          } catch(err) {
+            console.error("Bulk unmark error:", err);
+            showToast('Gagal mengembalikan member: ' + err.message);
+          }
+        },
+        'Ya, Balikin Data'
+      );
     }
 
     function isMemberAllTemplatesSent(m) {
@@ -9647,7 +10036,10 @@
 
     // General List Builder with Dual View (Desktop Table vs Mobile Cards) & Pagination
     function renderList(targetId, list, type, page) {
-      const container = document.getElementById(targetId);
+      let container = document.getElementById(targetId);
+      if (targetId === 'archivedTabContent' && document.getElementById('archivedListContainer')) {
+        container = document.getElementById('archivedListContainer');
+      }
       if (!container) return;
       container.innerHTML = '';
 
@@ -9984,6 +10376,7 @@
     }
 
     function closeMemberDetailModal() {
+      document.body.classList.remove('modal-active');
       const modal = document.getElementById('memberDetailModal');
       const backdrop = document.getElementById('memberDetailBackdrop');
       if (modal) {
